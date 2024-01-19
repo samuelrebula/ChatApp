@@ -43,7 +43,7 @@ export default () => {
         <div className="search">
           <div className="search--input">
             <SearchIcon fontSize="small" style={{color: '#919191'}}/>
-            <input type="search" placeholder="Search or start new chat" />
+            <input type="search" placeholder="Procurar ou começar uma nova conversa" />
           </div>
         </div>
 
