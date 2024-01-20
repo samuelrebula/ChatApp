@@ -51,7 +51,20 @@
     flex: 1;
     overflow-y: auto;
     background-color: #F8F9FA;
+    background-size: cover;
+    background-position: center;
+
+    padding: 20px 30px;
 }
+
+.chatWindow--body::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .chatWindow--body::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
 
 .chatWindow--footer {
     height: 62px;

@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import './ChatWindow.css';
+
+import MessageItem from "./MessageItem";
 
 import SearchIcon from '@mui/icons-material/Search';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
@@ -9,12 +11,70 @@ import CloseIcon from '@mui/icons-material/Close';
 import SendIcon from '@mui/icons-material/Send';
 import MicIcon from '@mui/icons-material/Mic';
 
-export default () => {
+export default ({user}) => {
+
+    const body = useRef();
+
+    let recognition = null;
+    let SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+    if(SpeechRecognition !== undefined) {
+        recognition = new SpeechRecognition();
+    }
 
     const [text, setText] = useState('');
+    const [listening, setListening] = useState(false);
+    const [list, setList] = useState([
+        {author:123, body: 'teste teste teste teste teste teste '},
+        {author:123, body: 'teste teste teste'},
+        {author:1234, body: 'teste'},
+        {author:123, body: 'teste teste teste teste teste teste '},
+        {author:123, body: 'teste teste teste'},
+        {author:1234, body: 'teste'},
+        {author:123, body: 'teste teste teste teste teste teste '},
+        {author:123, body: 'teste teste teste'},
+        {author:1234, body: 'teste'},
+        {author:123, body: 'teste teste teste teste teste teste '},
+        {author:123, body: 'teste teste teste'},
+        {author:1234, body: 'teste'},
+        {author:123, body: 'teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste '},
+        {author:123, body: 'teste teste teste'},
+        {author:1234, body: 'teste'},
+        {author:123, body: 'teste teste teste teste teste teste'},
+        {author:123, body: 'teste teste teste'},
+        {author:1234, body: 'teste'},
+        {author:123, body: 'teste teste teste teste teste teste '},
+        {author:123, body: 'teste teste teste'},
+        {author:1234, body: 'teste'},
+        {author:123, body: 'teste teste teste teste teste teste '},
+        {author:123, body: 'teste teste teste'},
+        {author:1234, body: 'teste'},
+        {author:123, body: 'teste teste teste teste teste teste '},
+        {author:123, body: 'teste teste teste'},
+        {author:1234, body: 'teste'},
+    ]);
+
+    useEffect(()=>{
+        if(body.current.scrollHeight > body.current.offsetHeight) {
+            body.current.scrollTop = body.current.scrollHeight - body.current.offsetHeight
+        }
+    }, [list]);
 
     const handleMicClick = () => {
+        if(recognition !== null) {
 
+            recognition.onstart = () => {
+                setListening(true);
+            }
+            recognition.onend = () => {
+                setListening(false);
+            }
+            recognition.onresult = (e) => {
+                setText( e.results[0][0].transcript );
+            }
+            
+            recognition.start();
+
+        }
     }
 
     const handleSendClick = () => {
@@ -45,8 +105,14 @@ export default () => {
                 </div>
 
             </div>
-            <div className="chatWindow--body">
-
+            <div ref={body} className="chatWindow--body">
+                {list.map((item, key)=>(
+                    <MessageItem 
+                        key={key}
+                        data={item}
+                        user={user}
+                    />
+                ))}
             </div>
 
             <div className="chatWindow--footer">
@@ -74,7 +140,7 @@ export default () => {
 
                     {text === '' &&
                         <div className="chatWindow--btn">
-                            <MicIcon onClick={handleMicClick} style={{color: '#919191'}} />
+                            <MicIcon onClick={handleMicClick} style={{color: listening ? '#126ECE' : '#919191'}} />
                         </div>
                     }
                     {text !== '' &&
