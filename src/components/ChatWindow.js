@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import './ChatWindow.css';
 
+import Api from "../Api";
+
 import MessageItem from "./MessageItem";
 
 import SearchIcon from '@mui/icons-material/Search';
@@ -11,7 +13,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import SendIcon from '@mui/icons-material/Send';
 import MicIcon from '@mui/icons-material/Mic';
 
-export default ({user}) => {
+export default ({user, data}) => {
 
     const body = useRef();
 
@@ -23,35 +25,14 @@ export default ({user}) => {
 
     const [text, setText] = useState('');
     const [listening, setListening] = useState(false);
-    const [list, setList] = useState([
-        {author:123, body: 'teste teste teste teste teste teste '},
-        {author:123, body: 'teste teste teste'},
-        {author:1234, body: 'teste'},
-        {author:123, body: 'teste teste teste teste teste teste '},
-        {author:123, body: 'teste teste teste'},
-        {author:1234, body: 'teste'},
-        {author:123, body: 'teste teste teste teste teste teste '},
-        {author:123, body: 'teste teste teste'},
-        {author:1234, body: 'teste'},
-        {author:123, body: 'teste teste teste teste teste teste '},
-        {author:123, body: 'teste teste teste'},
-        {author:1234, body: 'teste'},
-        {author:123, body: 'teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste '},
-        {author:123, body: 'teste teste teste'},
-        {author:1234, body: 'teste'},
-        {author:123, body: 'teste teste teste teste teste teste'},
-        {author:123, body: 'teste teste teste'},
-        {author:1234, body: 'teste'},
-        {author:123, body: 'teste teste teste teste teste teste '},
-        {author:123, body: 'teste teste teste'},
-        {author:1234, body: 'teste'},
-        {author:123, body: 'teste teste teste teste teste teste '},
-        {author:123, body: 'teste teste teste'},
-        {author:1234, body: 'teste'},
-        {author:123, body: 'teste teste teste teste teste teste '},
-        {author:123, body: 'teste teste teste'},
-        {author:1234, body: 'teste'},
-    ]);
+    const [list, setList] = useState([]);
+    const [users, setUsers] = useState([]);
+
+    useEffect(()=>{
+        setList([]);
+        let unsub = Api.onChatContent(data.chatId, setList, setUsers);
+        return unsub;
+    }, [data.chatId]);
 
     useEffect(()=>{
         if(body.current.scrollHeight > body.current.offsetHeight) {
@@ -77,8 +58,16 @@ export default ({user}) => {
         }
     }
 
+    const handleInputKeyUp = (e) => {
+        if(e.keyCode == 13) {
+            handleSendClick();
+        }
+    }
     const handleSendClick = () => {
-
+        if(text !== '') {
+            Api.sendMessage(data, user.id, 'text', text, users);
+            setText('');
+        }
     }
 
     return (
@@ -86,8 +75,8 @@ export default ({user}) => {
             <div className="chatWindow--header">
                 
                 <div className="chatWindow--headerinfo">
-                    <img className="chatWindow--avatar" src="https://wallpapers.com/images/hd/netflix-profile-pictures-1000-x-1000-dyrp6bw6adbulg5b.jpg" alt="" />
-                    <div className="chatWindow--name">Teste</div>
+                    <img className="chatWindow--avatar" src={data.image} alt="" />
+                    <div className="chatWindow--name">{data.title}</div>
                 </div>
 
                 <div className="chatWindow--headerbuttons">
@@ -134,6 +123,7 @@ export default ({user}) => {
                         placeholder="Digite uma mensagem"
                         value={text}
                         onChange={e=>setText(e.target.value)}
+                        onKeyUp={handleInputKeyUp}
                     />
                 </div>
                 <div className="chatWindow--pos">

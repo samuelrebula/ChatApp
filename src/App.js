@@ -15,16 +15,21 @@ import Api from "./Api";
 
 export default () => {
 
-  const [chatlist, setChatList] = useState([
-    {chatId : 1, title: 'Teste', image: 'https://wallpapers.com/images/hd/netflix-profile-pictures-1000-x-1000-dyrp6bw6adbulg5b.jpg'},
-    {chatId : 2, title: 'Teste', image: 'https://wallpapers.com/images/hd/netflix-profile-pictures-1000-x-1000-dyrp6bw6adbulg5b.jpg'},
-    {chatId : 3, title: 'Teste', image: 'https://wallpapers.com/images/hd/netflix-profile-pictures-1000-x-1000-dyrp6bw6adbulg5b.jpg'},
-    {chatId : 4, title: 'Teste', image: 'https://wallpapers.com/images/hd/netflix-profile-pictures-1000-x-1000-dyrp6bw6adbulg5b.jpg'},
-
-  ]);
+  const [chatlist, setChatList] = useState([]);
   const [activeChat, setActiveChat] = useState({});
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({
+    id: 'XxxvZd7zhFThdnkdLpwE',
+    name: 'Vitor',
+    avatar: 'https://cdn2.iconfinder.com/data/icons/user-people-4/48/5-512.png'
+  });
   const [showNewChat, setShowNewChat] = useState(false);
+
+  useEffect(()=>{
+    if(user !== null) {
+      let unsub = Api.onChatList(user.id, setChatList);
+      return unsub;
+    }
+  }, [user]);
 
   const handleNewChat = () => {
     setShowNewChat(true);
@@ -94,6 +99,7 @@ export default () => {
         {activeChat.chatId !== undefined && 
           <ChatWindow 
             user={user}
+            data={activeChat}
           />
         }
         {activeChat.chatId === undefined &&

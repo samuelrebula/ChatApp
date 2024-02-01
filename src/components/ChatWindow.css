@@ -51,6 +51,7 @@
     flex: 1;
     overflow-y: auto;
     background-color: #F8F9FA;
+    background-image: url('');
     background-size: cover;
     background-position: center;
 
